@@ -1,0 +1,33 @@
+require('dotenv').config()
+
+const express = require('express')
+const mysql = require('mysql2')
+
+const conSDE = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    database: 'sdeyaml'
+})
+
+const conTool = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    database: 'evetools'
+})
+
+// conSDE.connect(function(err) {
+//     if (err) throw err;
+//     console.log("Connected to SDE DB");
+// })
+
+// conTool.connect(function(err) {
+//     if (err) throw err;
+//     console.log("Connected to Tools DB");
+// })
+
+module.exports = {
+    conSDE,
+    conTool
+}

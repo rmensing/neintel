@@ -1,0 +1,207 @@
+import {createEffect, createResource, Show, on} from "solid-js";
+import { usePasteContext } from "../context/PasteContext";
+import { useNavigate } from "@solidjs/router";
+import CharLine from "../components/CharLine"
+import Ships from "../components/CharLine"
+import 'flowbite';
+import { useParams } from "@solidjs/router";
+
+var mutCheck = false;
+
+//submit data to create report and get a report ID
+const submitReport = async (data) => {
+    console.log("test", JSON.stringify(data))
+    const res = await fetch('http://192.168.1.5:5000/report', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify(data)
+    })
+return res.json()
+}
+
+const fetchChars = async (names) => {
+    const res = await fetch('http://192.168.1.5:5000/ids', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(names)
+    })
+    return res.json()
+}
+
+const fetchReport = async (id) => {
+    const res = await fetch('http://192.168.1.5:5000/report/'+ id, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+    })
+    return res.json()
+}
+
+export default function Local() {
+    const params = useParams()
+    const {paste, setPaste} = usePasteContext()
+    const navigate = useNavigate()
+    // No additional data formatting required beyond what was done in app.jsx
+    // names are currently an array an array of names.
+
+    // const [chars,{ mutate, refetch }] = createResource() 
+    // const [report_id,{ mutate, refetch }] = createResource(names, submitReport) 
+    console.log("Params.id==>", params.id)
+    console.log("Pre If",paste().length)
+    if(paste().length > 0 && typeof params.id == "undefined"){
+        console.log("LOCAL TRUE->",paste())
+        // createEffect(() => {
+        //     console.log("LOCAL->",paste())
+        //   })
+        var names = paste()
+        setPaste([])
+        // [chars,{ mutate, refetch }] = createResource(names, fetchChars)
+        // var report_id = submitReport(names)
+        var [report_id,{ mutate, refetch }] = createResource(names, submitReport) 
+        console.log("submitReport==>", report_id)
+        createEffect(on(report_id, (report_id) => {
+            console.log("submitReport2==>", report_id)
+            navigate('/local/'+ report_id, { replace: true })
+        }, { defer: true }))
+        
+    } else if (paste().length === 0 && typeof params.id !== "undefined"){
+        navigate('/local/'+ params.id, { replace: true })
+        // [chars,{ mutate, refetch }] = createResource(fetchReport(params.id))  
+    } else {
+        navigate('/', { replace: true })
+    }
+    // createEffect(() => {
+    //     console.log("LOCAL->",paste())
+    //   })
+    // let names = paste()
+    // const [chars,{ mutate, refetch }] = createResource(names, fetchChars)
+    // setPaste([])
+
+    // const [chars,{ mutate, refetch }] = createResource(names, fetchChars)
+
+    // const sortChars = () => {
+    //     const chrTmp = chars() || [];
+    //     return chrTmp.slice().sort((a,b)=> {
+    //         return b.kills - a.kills;
+    //     });
+    // }
+
+    // createEffect(() => {
+    //     console.log(chars.state === 'ready')
+    //     console.log(!chars.loading)
+    //     const sorted = sortChars()
+    //     console.log("SORTED=>",sorted)
+    //     if(chars.state === 'ready' && !mutCheck){
+    //         mutate(sorted)
+    //         mutCheck = true
+    //     }
+    //     navigate('/local'+ chars[0].report_id, { replace: true })
+    // })
+
+    
+
+    return (
+        <div>
+            <Show when={chars()} fallback={<p>Loading...</p>}>
+                    <div class="relative overflow-x-auto bg-gunmetal text-gray-400">
+                        <table class="w-full text-sm text-left text-gray-400">
+                            <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-2 py-2">
+                                        Sec
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Name
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Corp
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Alliance
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Kills
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Losses
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Solo
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Danger
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Gang
+                                    </th>
+                                    <th scope="col" class="px-2 py-2">
+                                        Ships
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    <For each={chars()}>
+                        {(char,i) => (
+                            <tr class="bg-gray-800 border-gray-700">
+                                <td class="px-2 py-0">
+                                {(Math.round((Number(char.security) + Number.EPSILON)*10)/10).toFixed(1)}
+                                {/* {char.security} */}
+                                </td>
+                                <td class="px-2 py-0 font-bold">
+                                {char.name}
+                                </td>
+                                <td class="px-2 py-0">
+                                <img src={"https://images.evetech.net/corporations/"+ char.corp_id +"/logo"}
+                                            title={""+ char.corp_name +""} class="w-8 h-8 border-0"></img>
+                                            <p class="text-xs">{char.corp_name}</p>
+                                </td>
+                                <td class="px-2 py-0">
+                                <img src={"https://images.evetech.net/alliances/"+ char.alliance_id +"/logo"}
+                                            title={""+ char.alliance_name +""} class="w-8 h-8 border-0 "></img>
+                                            <p>{char.alliance_name}</p>
+                                </td>       
+                                <td class="px-2 py-0">
+                                {char.kills}
+                                </td>
+                                <td class="px-2 py-0">
+                                {char.losses}
+                                </td>
+                                <td class="px-2 py-0">
+                                {char.solo}
+                                </td>
+                                <td class="px-2 py-0">
+                                {char.danger}
+                                </td>
+                                <td class="px-2 py-0">
+                                {char.gang}
+                                </td>
+                                <td class="px-2 py-0">
+                                <div class="flex -space-x-3">
+                                <For each={JSON.parse(char.ships)}>
+                                    {(ship,z) => (
+                                        <div>
+                                            <img src={"https://images.evetech.net/types/"+ ship.shipTypeID +"/icon"}
+                                            title={""+ ship.shipName +""} class="rounded w-8 h-8 border-0"></img>
+                                            <p>{console.log("SHIP=>",ship)}</p>
+                                        </div>
+                                    )}
+                                </For>
+                                </div>
+                                </td>
+                            </tr>
+                        )}
+                    </For>
+                    </tbody>
+                    </table>
+                </div>
+            </Show>
+            <div>
+            </div>
+        </div>
+    )
+}

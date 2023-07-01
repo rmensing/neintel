@@ -1,0 +1,146 @@
+//Name rules
+3 - 37 chrs (includes 1 space between first and family name)
+Name <= 24 chrs
+Can include middle name separated by a space
+Family name <= 12
+A-Z, a-z, 0-9, hyphen-minus and single quotation
+
+Corporation names may also include the dot character
+Space, hyphen-minus and single quotation characters are not allowed as the first or last character in a name.
+
+Name Regex:
+^(?=.{3,37}$)[a-zA-Z0-9'-]{1,24}(?: [a-zA-Z0-9'-]{1,24})?(?: [a-zA-Z0-9'-]{1,12})?$
+
+x.split('\t')
+========================================================
+For all pastes, each will be parsed and the pasted data formatted into JSON.
+Each will be assigned a unique report ID.  an entry will be made into the 
+report DB including: Report ID, submission type (local, cargo, dscan, etc) creation datetime, and 
+JSON formatted paste data.
+After this step they will be forwarded to the report page (with ID) for the full report.
+The report may be cached for a period of time and either eventually purged or run again 
+with updated information pulled.
+
+old Schema:
+CREATE TABLE `reports` (
+  `report_id` varchar(10) NOT NULL,
+  `char_id` int(10) unsigned NOT NULL,
+  `char_name` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+// Local Chat
+{"
+Anuctzi Achuna
+Aribeth Darkfield
+Balerion Vermax
+barashka yiii
+Bazulu
+Bilbo Madeveda
+Brotakul o7
+Burak Kamy
+Burak Kuza
+Conardier Lemmont
+Cosmic23
+Dismas Gestas
+Donmir LeTrec
+EHOT PATASKYH
+Erebus Laeradis
+Eva Nutt
+FataleDemise TitanBane
+Ferrus Bowler
+Geksar Antanta
+Hakkara Eto
+Hal 500
+hook1
+Hopper's 3rd Minion
+Inoxia Starfire
+Justare Donier
+Kapitan Oguretzz
+Kerridan Stenier-Tian
+Lobesorehauler
+lobevaser
+megazoid2k 2nd
+MTheOverlord
+Newton Grav
+Nsuneirl
+Oophelia
+Otsirc Etnom
+Race Dunier
+Sirger Malzokitch
+Sky Shine
+Spooky Bergamonte
+th0ughtcriminal
+Traven O'Toole
+Venommm
+Zemr'hana Xristos
+ZOD Typhon941
+"}
+
+// DScan
+// Name, Type, Distance
+{"
+17478	Bento Box	Retriever	-
+602	agony kes	Kestrel	-
+594	Incursus	Incursus	-
+33474	Mobile Depot	Mobile Depot	-
+17841	Navy 	Federation Navy Comet	-
+12745	mooo	Occator	-
+17478	Burak Kuza's Retriever	Retriever	-
+35833	Stacmon - The Quad	Fortizar	0 m
+35826	Stacmon - Karpinski Forge	Azbel	1,133 km
+35835	Stacmon - Furirams Furnace	Athanor	1,137 km
+35826	Stacmon - Maniac Memorial Labs ME,TE,Inv	Azbel	1,159 km
+3875	Slays	Stargate (Gallente System)	5,019 km
+35835	Stacmon - T2 Ice & Moon Reprocess Hub	Athanor	9,571 km
+3875	Dastryns	Stargate (Gallente System)	59,013 km
+3875	Covryn	Stargate (Gallente System)	80,495 km
+3867	Stacmon VIII - Moon 6 - Material Acquisition Refinery	Gallente Industrial Station	506,143 km
+2501	Stacmon VIII - Moon 22 - Freedom Extension Warehouse	Minmatar Station	0.1 AU
+3800	Stacmon - Star	Sun M0 (Orange radiant)	12.7 AU
+35833	Stacmon - IChooseYou Secondary Market	Fortizar	12.8 AU
+"}
+
+//Probe Scanner
+//ID, Name, Group, Signal, Distance
+{"
+GBT-060	Cosmic Anomaly	Combat Site	Stellar Observation Post	100.0%	12.74 AU
+HMZ-852	Cosmic Anomaly	Combat Site	Serpentis Den	100.0%	22.57 AU
+UBX-850	Cosmic Signature			0.0%	19.91 AU
+XTE-285	Cosmic Anomaly	Combat Site	Serpentis Den	100.0%	13.33 AU
+"}
+
+
+//Inventory
+// Name, Qty, Group, Catagory, Volume, Value
+{"
+Smuggler Lockbox	148	Miscellaneous	Commodity			14.80 m3	148,000,000.00 ISK
+Domination Target Painter	1	Target Painter	Module			5 m3	63,884,434.39 ISK
+Extended Capsuleer Day XX Cerebral Accelerator	1	Booster	Implant		10	1 m3	63,000,000.00 ISK
+Agency 'Pyrolancea' DB7 Dose III	1	Booster	Implant		11	1 m3	27,815,022.15 ISK
+Sisters Core Scanner Probe	8	Scanner Probe	Charge			0.80 m3	2,799,327.52 ISK
+Mobile Small Warp Disruptor I		Mobile Warp Disruptor	Deployable			65 m3	2,221,109.85 ISK
+Mobile Depot		Mobile Depot	Deployable			50 m3	2,137,987.99 ISK
+Nanite Repair Paste	45	Nanite Repair Paste	Charge			0.45 m3	1,496,917.35 ISK
+Incursus Federation Navy SKIN	1	Permanent SKIN	SKINs			0.01 m3	460,013.16 ISK
+Medium Freight Container	3	Freight Container	Celestial			150 m3	392,754.36 ISK
+Veldspar	32,865	Veldspar	Asteroid			3,286.50 m3	313,203.45 ISK
+Station Container	8	Audit Log Secure Container	Celestial			80,000 m3	253,155.68 ISK
+99-Misc		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+69-Loot		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+40-Blueprints		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+10-Filaments		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+09-Clothing		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+08-Boosters&implants		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+07-Festival Stuff		Freight Container	Celestial			5,000 m3	130,918.12 ISK
+50-Hold		Cargo Container	Celestial			650 m3	71,747.13 ISK
+Dr Who		Freight Container	Celestial			1,000 m3	32,611.02 ISK
+Ship Fits		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+06-Drones		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+05-Ammo		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+04-Modules-Low		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+03-Modules-Med		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+02-Modules-High		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+01-Ship Hulls		Audit Log Secure Container	Celestial			2,000,000 m3	31,644.46 ISK
+999-Morgue		Cargo Container	Celestial			325 m3	26,386.20 ISK
+00-Skins		Cargo Container	Celestial			325 m3	26,386.20 ISK
+"}

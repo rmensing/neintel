@@ -1,0 +1,253 @@
+// TTL on node-cache is 15 min (900sec)
+// TTL on mysql db - char zkill stats - 1hr
+// TTL on mysql db - char corp info - 1 day
+
+const { nanoid } = require("nanoid");
+const mysql = require('mysql')
+const esiJS = require('esijs')
+const esiClient = new esiJS({})
+const {
+    conSDE,
+    conTool
+} = require('../config/db')
+const NodeCache = require('node-cache')
+const charCache = new NodeCache()
+const shipCache = new NodeCache()
+
+
+//const names = ['Justare Donier','Iverer Donier']
+var chars = {}
+var charData = {}
+
+//populate shipCache
+async function cacheShips() {
+    ships = await queryShips()
+    for (ship of ships){
+        success = shipCache.set(ship.typeID, ship)
+        //console.log("ships-->", ship.typeID, ship)
+    }
+    //console.log("ships-->", ships)
+}
+
+// get Hello
+const getHello = async (req, res) => {
+    res.status(200).send('Hello World!')
+}
+
+//postID
+const postID = async (req, res) => {
+    // const names = req.body.names
+    const names = req.body
+    // console.log("postID1-->", names)
+    ids = await getID2(names)
+    result = await createReport(ids)
+    console.log("REPORT_ID-->", result)
+    let report_id = result
+    report = await queryReport(report_id)
+    console.log("REPORT->",report)
+    res.status(200).json({report})
+}
+
+getID
+async function getID(names){
+    // console.log(names)
+    // let aName = name.split()
+    let result = {}
+    let chars = {}
+    let charData = {}
+    result = await esiClient.universe.bulk.namesToIDs(names)
+        .catch(function(e){
+            console.error(e)
+        })
+    chars = result.data
+    // console.log(chars)   
+    charData = chars.characters
+    // console.log(charData)
+    // return charData[0].id
+    return charData
+}
+
+async function getChar(id){
+    result = await esiClient.character.info(id)
+    .catch(function(e){
+        console.error(e)
+    })
+    charInfo = result.data
+    // console.log(charInfo)
+    return charInfo
+}
+
+async function getCorp(corpID){
+    result = await esiClient.corporation.info(corpID)
+    .catch(function(e){
+        console.error(e)
+    })
+    // console.log(corpInfo)
+    corpInfo = result.data
+    corpName = corpInfo.name
+    return corpName
+}
+
+async function getAlly(allyID){
+    result = await esiClient.alliance.info(allyID)
+    .catch(function(e){
+        console.error(e)
+    })
+    allyInfo = result.data
+    allyName = allyInfo.name
+    return allyName
+}
+
+async function getID2(names){
+    // console.log("NAMES-->",names)
+    var ids = await getID(names)
+    // console.log("IDS-->",ids)
+    let nLen = names.length
+    for (let i = 0; i< nLen; i++){
+        let results = await queryName(names[i])
+        // console.log('getID2---', names[i], results)
+        if (results == 0){
+            // console.log("aName-->", names[i], ids[i].id)
+            let charInfo = await getChar(ids[i].id)
+            let corpName = await getCorp(charInfo.corporation_id)
+            let allyName = await getAlly(charInfo.alliance_id)
+            let zData = await getZkill(ids[i].id)
+            //Call zkill api stats on char
+            //then add to char insert corp ally ships etc
+            let result = await charInsert(
+                names[i], 
+                ids[i].id,
+                charInfo.security_status,
+                charInfo.corporation_id, 
+                corpName, 
+                charInfo.alliance_id, 
+                allyName, 
+                zData.shipsDestroyed, 
+                zData.shipsLost, 
+                zData.soloKills, 
+                zData.dangerRatio, 
+                zData.gangRatio, 
+                zData.topLists.values,  //top ships
+                zData
+                )
+            // console.log(result)
+        }
+    }// console.log("final-->", charCache.keys())
+    return ids
+}
+
+async function getZkill(id){
+    const response = await fetch(process.env.ZKILL_API + id +"/")
+    const zData = await response.json()
+    // console.log(zData.info)
+    return zData
+}
+
+async function getChars(ids){
+    let nLen = names.length
+    for (let i = 0; i< nLen; i++){
+        let results = await queryChars(ids[i].id)
+
+    }
+}
+
+async function createReport(ids){
+    let report_id = nanoid(10)
+    // console.log("Report_ID==>", report_id)
+    let iLen = ids.length
+    for (let i = 0; i< iLen; i++){
+        const result = await reportInsert(report_id, ids[i].id, ids[i].name);
+    }
+    return report_id
+}
+
+function reportInsert(report_id, id, name) {
+    return new Promise(function(resolve, reject){
+        var sql = "INSERT INTO reports (report_id, char_id, char_name) VALUES ('"+ report_id +"',"+ id +",'"+ name +"')"
+        conTool.query(sql, function (err, rows, fields) {
+            if (err) return reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+function reportQuery(report_id) {
+    return new Promise(function(resolve, reject){
+        var sql = "SELECT reports.report_id, chars.id, chars.name, chars.security, chars.corp_id, chars.corp_name, chars.alliance_id, chars.alliance_name, chars.kills, chars.losses, chars.solo, chars.danger, chars.gangs, chars.ships FROM reports JOIN chars ON reports.char_id = chars.id WHERE reports.report_id = '"+ report_id +"'";
+        conTool.query(sql, function (err, rows, fields) {
+            if (err) return reject(err);
+            // console.log("REPORT-->", Object.values(JSON.parse(JSON.stringify(rows))))
+            resolve(Object.values(JSON.parse(JSON.stringify(rows))));
+        });
+    });
+}
+
+async function queryReport(report_id){
+    const result = await reportQuery(report_id);
+    // console.log("queryName-->", result)
+    return result
+}
+
+function nameQuery(name) {
+    return new Promise(function(resolve, reject){
+        var sql = "SELECT IFNULL( (SELECT id FROM chars WHERE name = '"+ name +"' LIMIT 1) , 0)"
+        conTool.query(sql, function (err, rows, fields) {
+            if (err) return reject(err);
+            // console.log("nameQuery-->", Object.values(JSON.parse(JSON.stringify(rows[0]))))
+            resolve(Object.values(JSON.parse(JSON.stringify(rows[0]))));
+        });
+    });
+}
+
+async function queryName(name){
+    const result = await nameQuery(name);
+    // console.log("queryName-->", result)
+    return result
+}
+
+function insertChar(name, id, security, corpID, corpName, allyID, allyName, kills, losses, solo, danger, gang, ships, zData){
+    kills = kills ?? 0
+    losses = losses ?? 0
+    solo = solo ?? 0
+    danger = danger ?? 0
+    gang = gang ?? 0
+    // console.log(name, id, corpID, corpName, allyID, allyName, kills, losses, solo, danger, gang, ships)
+    return new Promise(function(resolve, reject){
+        var sql = "INSERT INTO chars (id, name, security, corp_id, corp_name, alliance_id, alliance_name, kills, losses, solo, danger, gangs, ships, zkill_stats) VALUES ("+ id +",'"+ name +"',"+ security +","+ corpID +",'"+ corpName +"',"+ allyID +",'"+ allyName +"',"+ kills +","+ losses +","+ solo +","+ danger +","+ gang +",'"+ ships +"','"+ zData +"')"
+        conTool.query(sql, function (err, rows, fields) {
+            if (err) return reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+async function charInsert(name, id, security, corpID, corpName, allyID, allyName, kills, losses, solo, danger, gang, ships, zData){
+    const result = await insertChar(name, id, security, corpID, corpName, allyID, allyName, kills, losses, solo, danger, gang, ships, zData);
+    return result
+}
+
+function shipQuery() {
+    return new Promise(function(resolve, reject){
+        var sql = "SELECT invTypes.typeID, invTypes.typeName, invTypes.groupID, invGroups.categoryID, invGroups.groupName FROM invTypes JOIN invGroups ON invTypes.groupID = invGroups.groupID WHERE invGroups.categoryID = 6"
+        conSDE.query(sql, function (err, rows, fields) {
+            if (err) return reject(err);
+            //console.log("shipQuery-->", Object.values(JSON.parse(JSON.stringify(rows[0]))))
+            resolve(Object.values(JSON.parse(JSON.stringify(rows))));
+        });
+    });
+}
+
+async function queryShips(){
+    const result = await shipQuery();
+    //console.log("queryShips-->", result)
+    return result
+}
+
+module.exports = {
+    getHello,
+    getChar,
+    getID,
+    getID2,
+    postID,
+    cacheShips
+}
