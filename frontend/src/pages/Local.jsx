@@ -34,6 +34,18 @@ function closeNav(id) {
     document.getElementById("main").style.paddingRight = "20px";
     }
   }
+  /* set all sidenav elements to closed. for use with clicking the window instead of a button to close */
+  function closeAll() {
+    const matches = document.querySelectorAll("div.sidenav");
+    console.log("closeall",matches);
+    if (matches != null){
+        for (const m of matches){
+            m.style.width = "0px";
+       }
+       document.getElementById("main").style.paddingRight = "20px";
+    }
+  }
+
 
 //submit data to create report and get a report ID
 const submitReport = async (data) => {
@@ -353,6 +365,7 @@ async function sortHandler(col, e) {
     console.log("FINAL SORTED", sorted);
     setReportStore(reconcile(sorted));
     initFlowbite();
+    e.stopPropagation();
 }
 
     createEffect(async () => {
@@ -394,6 +407,7 @@ async function sortHandler(col, e) {
 
     function drawerHandler(id, e) {
         console.log("CLICK->", id)
+        closeAll();
         var wd = document.getElementById("mySidenav"+id).style.width
         // var result = getAll(id);
         if (wd === "250px"){
@@ -404,12 +418,16 @@ async function sortHandler(col, e) {
             // document.getElementById("sidenavBody").innerHTML = result;
             openNav(id)
         }
-        
+        e.stopPropagation();
         console.log(document.getElementById("mySidenav"+id).style.width)
     }
 
+    function clickHandler(e) {
+        closeAll();
+    }
+    
     return (
-        <div>
+        <div style="height: 100%;" onClick={[clickHandler]}>
             <Show when={reportStore.length > 0} fallback={<p>Loading...</p>}>
                     <div class="bg-gunmetal text-gray-400" style="">
                         <table scope="table" class="text-sm text-left text-gray-400 border border-gray-700" style="table-layout: fixed; width: 100%; white-space: nowrap;">
@@ -619,11 +637,18 @@ async function sortHandler(col, e) {
                             <div id={"mySidenav"+ char.id} class="sidenav">
                             <a href="javascript:void(0)" class="closebtn" onClick={[drawerHandler,char.id]}>&times;</a>
                             <div id="sidenavBody">
+                                
                             <Switch>
                                 <Match when={char.ships_all.length > 0}>
-                                    <div class="grid grid-cols-3 gap-0 rounded-t-lg text-xs text-gray-100 uppercase bg-gray-700">
-                                        <div class="px-2">Kills</div>
-                                        <div class="col-span-2">Ship</div>
+                                    <div class="">
+                                        <div class="bg-verdigris z-0 rounded-t-md">
+                                            <p class="text-center font-bold">{char.name}</p>
+                                            <p class="text-center">Top all time</p>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-0 text-xs text-gray-100 uppercase bg-gray-700">
+                                            <div class="px-2">Kills</div>
+                                            <div class="col-span-2">Ship</div>
+                                        </div>
                                     </div>
                                     <For each={char.ships_all}>
                                     {(shp,s) => (
@@ -647,6 +672,10 @@ async function sortHandler(col, e) {
                                     </For>
                                 </Match>
                                 <Match when={char.ships.length === 0}>
+                                <div class="bg-verdigris z-0 rounded-t-md">
+                                    <p class="text-center font-bold">{char.name}</p>
+                                    <p class="text-center">Top all time</p>
+                                </div>
                                     <div class="px-3 py-2">
                                         <p><b>None</b></p>
                                     </div>

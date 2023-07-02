@@ -76,54 +76,7 @@ services:
       - ZKILL_API=https://zkillboard.com/api/stats/characterID/
       - ZKILL_USERAGENT=${ZKILL_USERAGENT}
     depends_on:
-      - db
-
-  db:
-    container_name: mariadb
-    image: mariadb
-    restart: always
-    networks:
-      net:
-        aliases: []
-    ports:
-      - 3306:3306
-    environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    volumes:
-      - ./.init:/docker-entrypoint-initdb.d
-      - ./.mariadb:/var/lib/mysql
-
-
-  adminer:
-    container_name: adminer
-    image: adminer
-    restart: always
-    networks:
-      net:
-        aliases: []
-    ports:
-      - 8080:8080
-
-  phpmyadmin:
-    container_name: phpmyadmin
-    image: phpmyadmin:latest
-    restart: unless-stopped
-    networks:
-      net:
-        aliases: []
-    ports:
-      - 8082:80
-    volumes:
-      - ./.phpmyadmin:/etc/phpmyadmin
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_UPLOADDIR=/etc/phpmyadmin/temp
-      - PMA_SAVEDIR=/etc/phpmyadmin/temp
-
+      - mongo
   swag:
     image: lscr.io/linuxserver/swag:latest
     container_name: swag

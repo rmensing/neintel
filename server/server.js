@@ -2,26 +2,10 @@ require('dotenv').config()
 
 const express = require('express')
 const cors = require('cors');
-const mysql = require('mysql2')
 const mongoose = require('mongoose');
 const toolsRoutes = require('./routes/toolsRoutes')
 const toolsController = require('./controllers/toolsController')
 
-
-// const con = mysql.createConnection({
-//     host: process.env.MYSQL_HOST,
-//     user: process.env.MYSQL_USER,
-//     password: process.env.MYSQL_PASS
-// })
-
-// con.connect(function(err) {
-//     if (err) throw err;
-//     console.log("Connected");
-// })
-
-// const names = ['Justare Donier','Iverer Donier']
-// let chars = {}
-// let charData = {}
 var corsOptions = {
   origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -45,9 +29,6 @@ app.use((req, res, next) => {
 
 //routes
 app.use('/', toolsRoutes)
-
-//toolsController.getID()
-// toolsController.cacheShips()
 
 app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}!`))
 

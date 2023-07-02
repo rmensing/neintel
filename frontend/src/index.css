@@ -23,13 +23,13 @@ a.block {
   right: 0;
   background-color: #111; /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 60px; /* Place content 60px from the top */
+  padding-top: 30px; /* Place content 60px from the top */
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
 }
 
 /* The navigation menu links */
 .sidenav a {
-  padding: 8px 8px 8px 32px;
+  padding: 8px 8px 8px 8px;
   text-decoration: none;
   font-size: 25px;
   color: #818181;
@@ -46,9 +46,9 @@ a.block {
 .sidenav .closebtn {
   position: absolute;
   top: 0;
-  right: 25px;
+  left: 0px;
   font-size: 36px;
-  margin-left: 50px;
+  color: #b00000;
 }
 
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */

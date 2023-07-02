@@ -19,8 +19,6 @@ router.get('/', getHello)
 
 router.get('/getid', getChar)
 
-router.post('/ids', postID)
-
 router.post('/report', prepReport)
 
 // router.get('/report/:id', getReport)

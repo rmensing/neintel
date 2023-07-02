@@ -5,13 +5,13 @@ const differenceInSeconds = require('date-fns/differenceInSeconds')
 const formatISO9075 = require('date-fns/formatISO9075')
 var parseISO = require('date-fns/parseISO')
 const { nanoid } = require("nanoid");
-const mysql = require('mysql2')
 const mongoose = require('mongoose');
 const Chars = require('../models/charModel');
 const Reports = require('../models/reportsModel')
 const Ships = require('../models/shipsModel')
 const Traits = require('../models/traitsModel')
 const Traits2 = require('../models/traits2Model')
+const Factions = require('../models/factionsModel')
 var Bottleneck = require("bottleneck/es5");
 const axios = require("../node_modules/axios/dist/node/axios.cjs");
 const swag = require("../utils/swag");
@@ -22,10 +22,6 @@ const limiter = new Bottleneck({
   });
 
 const {
-    conSDE,
-    conTool,
-    conSDEProm,
-    conToolProm,
     evetoolsDB,
     rClient
 } = require('../config/db')
@@ -43,7 +39,7 @@ const fetchShips = async (req, res) => {
 //@
 const fetchTraits = async (req, res) => {
     var traits = await traitQuery()
-    console.log("traits==>", traits)
+    // console.log("traits==>", traits)
     res.status(200).json(traits)
 }
 //@
@@ -51,21 +47,7 @@ const fetchTraits = async (req, res) => {
 const getHello = async (req, res) => {
     res.status(200).send('Hello World!')
 }
-//used?
-//postID
-const postID = async (req, res) => {
-    // const names = req.body.names
-    const names = req.body
-    // console.log("postID1-->", names)
-    ids = await getID2(names)
-    result = await createReport(ids)
-    console.log("REPORT_ID-->", result)
-    let report_id = result
-    report = await reportQuery(report_id)
-    console.log("REPORT->",report)
-    // res.status(200).json({report})
-    res.status(200).json(report)
-}
+
 //@
 const prepReport = async (req, res) => {
     //parse for data type
@@ -154,28 +136,6 @@ async function getID(names){
     return charData
 }
 
-// async function getID(names){
-//     let result = {}
-//     let chars = {}
-//     let charData = {}
-//     var url = "https://esi.evetech.net/latest/universe/ids/?datasource=tranquility&language=en";
-//     var headers = {
-//         'accept': 'application/json',
-//         'Accept-Language': `en-us`,
-//         'Content-Type': 'application/json'
-//     };
-//     var body = names;
-//     result = await axios.post(url, body, {
-//         headers
-//     })
-//     // console.log("getNtoID=>", result)
-//     chars = result.data
-//     console.log("CHARS=>",chars)   
-//     charData = chars.characters
-//     console.log("CHARDATA=>",charData)
-//     // return charData[0].id
-//     return charData
-// }
 //@
 // getID
 async function getChar(id){
@@ -190,21 +150,6 @@ async function getChar(id){
     console.log(charInfo)
     return charInfo
 }
-// async function getChar(id){
-//     var url = `https://esi.evetech.net/latest/characters/${id}/?datasource=tranquility`;
-//     var headers = {
-//         'accept': 'application/json',
-//         'Accept-Language': `en-us`,
-//         'Content-Type': 'application/json'
-//     };
-//     result = await axios.get(url, {
-//         headers
-//     })
-//     // console.log("getNtoID=>", result)
-//     charInfo = result.data
-//     // console.log(charInfo)
-//     return charInfo
-// }
 
 async function getAff(ids){
     console.log("AFFINFO:", ids)
@@ -218,32 +163,14 @@ async function getAff(ids){
     console.log("affInfo--", affData)
     return affData
 }
-// async function getAff(ids){
-//     let result = {}
-//     let chars = {}
-//     let charData = {}
-//     var url = "https://esi.evetech.net/latest/characters/affiliation/?datasource=tranquility&language=en";
-//     var headers = {
-//         'accept': 'application/json',
-//         'Accept-Language': `en-us`,
-//         'Content-Type': 'application/json'
-//     };
-//     var body = ids;
-//     result = await axios.post(url, body, {
-//         headers
-//     })
-//     affData = result.data
-//     console.log("affInfo--", affData)
-//     return affData
-// }
 
 //@
-async function getFaction(factionID){
-    result = await factionQuery(factionID)
-    factionData = result[0]
-    console.log("factionResult:", factionData)
-    return factionData
-}
+// async function getFaction(factionID){
+//     result = await factionQuery(factionID)
+//     factionData = result[0]
+//     console.log("factionResult:", factionData)
+//     return factionData
+// }
 
 async function getCorp(corpID){
     try {
@@ -258,21 +185,6 @@ async function getCorp(corpID){
     return corpName
 }
 
-// async function getCorp(corpID){
-//     var url = `https://esi.evetech.net/latest/corporations/${corpID}/?datasource=tranquility`;
-//     var headers = {
-//         'accept': 'application/json',
-//         'Accept-Language': `en-us`,
-//         'Content-Type': 'application/json'
-//     };
-//     result = await axios.get(url, {
-//         headers
-//     })
-//     corpInfo = result.data
-//     corpName = corpInfo.name
-//     return corpName
-// }
-
 async function getAlly(allyID){
     try {
         var result = await swagClient.alliance.info(allyID)
@@ -283,21 +195,6 @@ async function getAlly(allyID){
     allyName = allyInfo.name
     return allyName
 }
-
-// async function getAlly(allyID){
-//     var url = `https://esi.evetech.net/latest/alliances/${allyID}/?datasource=tranquility`;
-//     var headers = {
-//         'accept': 'application/json',
-//         'Accept-Language': `en-us`,
-//         'Content-Type': 'application/json'
-//     };
-//     result = await axios.get(url, {
-//         headers
-//     })
-//     allyInfo = result.data
-//     allyName = allyInfo.name
-//     return allyName
-// }
 
 //@
 async function getID2(names){
@@ -321,8 +218,9 @@ async function getID2(names){
             let charInfo = await getChar(ids[i].id)
             let ii = affData.findIndex(x => x.character_id === ids[i].id)
             let factionID = affData[ii].faction_id ?? 0
+            console.log("FACTIONID:", factionID)
             if (factionID != 0){
-                var factionData = await getFaction(factionID)
+                var factionData = await factionQuery(factionID)
                 // var factionName = await getFaction(factionID)
                 var factionName = factionData.factionName
                 var factionCorp = factionData.corporationID
@@ -374,28 +272,13 @@ async function getID2(names){
             var diffzts = differenceInSeconds(dt, zts)
             var diffcts = differenceInSeconds(dt, cts)
             console.log("CHARDATA->",zts, cts, diffzts,diffcts, dt )
-            // if(diffzts >= 3600) { //cache zkill data for 1 hour
-            //     //update zkill stats
-            //     // let zData = await limiter.schedule(() => getZkill(ids[i].id))
-            //     let result = await updateCharZ(
-            //         ids[i].id, 
-            //         zData.shipsDestroyed, 
-            //         zData.shipsLost, 
-            //         zData.soloKills, 
-            //         zData.dangerRatio, 
-            //         zData.gangRatio, 
-            //         zData.topLists[3].values,  //top ships
-            //         zData,
-            //         dt
-            //         )
-            // }
             if (diffcts >= 86400){       //cache character data for 24 hours
                 //check/update corp info 
                 let charInfo = await getChar(ids[i].id)
                 let ii = affData.findIndex(x => x.character_id === ids[i].id)
                 let factionID = affData[ii].faction_id ?? 0
                 if (factionID != 0){
-                    var factionData = await getFaction(factionID)
+                    var factionData = await factionQuery(factionID)
                     // var factionName = await getFaction(factionID)
                     var factionName = factionData.factionName
                     var factionCorp = factionData.corporationID
@@ -422,8 +305,6 @@ async function getID2(names){
                     dt
                     )
             }
-            
-
         }
     }
     return ids
@@ -460,29 +341,6 @@ const fetchZkill = async (req, res) => {
             dt
             )
     }
-    // let zData = await limiter.schedule(() => getZkill(id))
-    // var shipsSeven = [];
-    // var ships_all = [];
-    // if(zData.topLists[3].values.length > 0){
-    //     shipsSeven =  zData.topLists[3].values
-    // }
-    // if (zData.hasOwnProperty("topAllTime") && zData.topAllTime != null) {
-    //     if(zData.topAllTime[4].data.length > 0){
-    //         ships_all =  zData.topAllTime[4].data
-    //     }
-    // }
-    // let result = await updateCharZ(
-    //     id, 
-    //     zData.shipsDestroyed, 
-    //     zData.shipsLost, 
-    //     zData.soloKills, 
-    //     zData.dangerRatio, 
-    //     zData.gangRatio, 
-    //     shipsSeven,  //top ships
-    //     ships_all,
-    //     zData,
-    //     dt
-    //     )
     res.status(200).json(zData)
 }
 
@@ -499,26 +357,7 @@ async function getZkill(id){
     // console.log(zData.info)
     return zData
 }
-//used?
-async function createReport(ids){
-    let report_id = nanoid(10)
-    // console.log("Report_ID==>", report_id)
-    let iLen = ids.length
-        for (let i = 0; i< iLen; i++){
-            const result = await reportInsert(report_id, ids[i].id, ids[i].name);
-        }
-        return report_id
-}
-//@
-// async function insertReport(report_id, report_type, report_data) {
-//     var date = new Date()
-//     report_dt = date.toISOString().slice(0, 19).replace('T', ' ')
-//     // report_data = conToolProm.escape(report_data)
-//     report_dataString = report_data.join(',')
-//     var sql = 'INSERT INTO `reports` (`report_id`, `report_type`, `report_data`, `report_dt`) VALUES (?,?,?,?)'
-//     const [rows, fields] = await conToolProm.query(sql, [report_id, report_type, report_dataString, report_dt])
-//     return rows
-// }
+
 async function insertReport(report_id, report_type, report_data) {
     var date = new Date()
     report_dt = date.toISOString().slice(0, 19).replace('T', ' ')
@@ -541,11 +380,6 @@ async function insertReport(report_id, report_type, report_data) {
     }
 }
 //@
-// async function getReportData(report_id) {
-//     var sql = 'SELECT * FROM `reports` WHERE `report_id` = ? LIMIT 1'
-//     const [rows, fields] = await conToolProm.query(sql, [report_id])
-//     return rows
-// }
 async function getReportData(report_id) {
     try {
         const result = await Reports.findOne({report_id: report_id});
@@ -556,21 +390,7 @@ async function getReportData(report_id) {
         throw error;
     }
 }
-//used?
-async function reportInsert(report_id, id, name) {
-    // name = conToolProm.escape(name)
-    var sql = 'INSERT INTO reports (report_id, char_id, char_name) VALUES ("'+ report_id +'",'+ id +',"'+ name +'")'
-    const [rows, fields] = await conToolProm.query(sql)
-    return rows
-}
-//@
-// async function reportQuery(report_id) {
-//     // var sql = "SELECT reports.report_id, chars.id, chars.name, chars.security, chars.corp_id, chars.corp_name, chars.alliance_id, chars.alliance_name, chars.kills, chars.losses, chars.solo, chars.danger, chars.gang, chars.ships FROM reports JOIN chars ON reports.char_id = chars.id WHERE reports.report_id = '"+ report_id +"'";
-//     var sql = 'SELECT `reports`.`report_id`, `chars`.`id`, `chars`.`name`, `chars`.`security`, `chars`.`corp_id`, `chars`.`corp_name`, `chars`.`alliance_id`, `chars`.`alliance_name`, `chars`.`faction_id`, `chars`.`faction_name`, `chars`.`faction_corp`, `chars`.`kills`, `chars`.`losses`, `chars`.`solo`, `chars`.`danger`, `chars`.`gang`, `chars`.`ships` FROM `reports` JOIN `chars` ON `reports`.`report_data` LIKE concat("%", `chars`.`name`, "%") WHERE `reports`.`report_id` = ?';
-//     const [rows, fields] = await conToolProm.query(sql, [report_id])
-//     // console.log("REPORT-->", Object.values(JSON.parse(JSON.stringify(rows))))
-//     return Object.values(JSON.parse(JSON.stringify(rows)))
-// }
+
 async function reportQuery(report_id) {
     try {
         const result = await Reports.aggregate(
@@ -604,12 +424,6 @@ async function reportQuery(report_id) {
                     "faction_id": "$char_info.faction_id",
                     "faction_name": "$char_info.faction_name",
                     "faction_corp": "$char_info.faction_corp",
-                    // "kills": "$char_info.kills",
-                    // "losses": "$char_info.losses",
-                    // "solo": "$char_info.solo",
-                    // "danger": "$char_info.danger",
-                    // "gang": "$char_info.gang",
-                    // "ships": "$char_info.ships",
                     "kills": {"$literal": 0},
                     "losses": {"$literal": 0},
                     "solo": {"$literal": 0},
@@ -643,10 +457,6 @@ async function nameQuery(name) {
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'SELECT IFNULL((SELECT `id` FROM `chars` WHERE `name` = ? LIMIT 1), 0)'
-    // const [rows, fields] = await conToolProm.query(sql, [name])
-    // console.log("nameQuery==>",Number(Object.values(JSON.parse(JSON.stringify(rows[0])))))
-    // return Number(Object.values(JSON.parse(JSON.stringify(rows[0]))))
 }
 //@
 async function charQuery(id) {
@@ -662,9 +472,6 @@ async function charQuery(id) {
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'SELECT * FROM `chars` WHERE `id` = ? LIMIT 1'
-    // const [rows, fields] = await conToolProm.query(sql, [id])
-    // return Object.values(JSON.parse(JSON.stringify(rows)))
 }
 //@
 async function insertChar(name, id, security, corpID, corpName, allyID, allyName, factionID, factionName, factionCorp, kills, losses, solo, danger, gang, ships, ships_all, zData, dt, dt){
@@ -676,11 +483,6 @@ async function insertChar(name, id, security, corpID, corpName, allyID, allyName
     ships = ships ?? []
     ships_all = ships_all ?? []
     zData = zData ?? {}
-    // name = conToolProm.escape(name)
-    // corpName = conToolProm.escape(corpName)
-    // allyName = conToolProm.escape(allyName)
-    // ships = JSON.stringify(ships)
-    // zData = JSON.stringify(zData)
     console.log("INSERT REPORT",name, id, security, corpID, corpName, allyID, allyName, factionID, factionName, factionCorp, kills, losses, solo, danger, gang, ships, ships_all,  zData, dt, dt)
     const char = new Chars({
         id: id,
@@ -712,9 +514,6 @@ async function insertChar(name, id, security, corpID, corpName, allyID, allyName
         console.error("Error saving report:", error);
         throw error;
     }
-    // var sql = 'INSERT INTO `chars` (`id`, `name`, `security`, `corp_id`, `corp_name`, `alliance_id`, `alliance_name`, `faction_id`, `faction_name`, `faction_corp`, `kills`, `losses`, `solo`, `danger`, `gang`, `ships`, `zkill_stats`, `z_dt`, `char_dt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-    // const [rows, fields] = await conToolProm.query(sql, [id, name, security, corpID, corpName, allyID, allyName, factionID, factionName, factionCorp, kills, losses, solo, danger, gang, ships, zData, dt, dt])
-    // return rows
 }
 //@
 async function updateCharZ(id, kills, losses, solo, danger, gang, ships, ships_all, zData, z_dt){
@@ -747,9 +546,6 @@ async function updateCharZ(id, kills, losses, solo, danger, gang, ships, ships_a
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'UPDATE `chars` SET `kills` = ?, `losses` = ?, `solo` = ?, `danger` = ?, `gang` = ?, `ships` = ?, `zkill_stats` = ?, `z_dt` = ? WHERE `id` = ?' 
-    // const [rows, fields] = await conToolProm.query(sql, [kills, losses, solo, danger, gang, ships, zData, z_dt, id])
-    // return rows
     return;
 }
 //@
@@ -775,8 +571,6 @@ async function updateCharCorp(id, security, corpID, corpName, allyID, allyName, 
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'UPDATE `chars` SET `security` = ?, `corp_id` = ?, `corp_name` = ?, `alliance_id` = ?, `alliance_name` = ?, `faction_id` = ?, `faction_name` = ?, `faction_corp` = ?, `char_dt` = ? WHERE `id` = ?' 
-    // const [rows, fields] = await conToolProm.query(sql, [security, corpID, corpName, allyID, allyName, factionID, factionName, factionCorp, char_dt, id])
     return;
 }
 //@
@@ -793,15 +587,12 @@ async function shipQuery() {
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'SELECT * FROM `ships`'
-    // const [rows, fields] = await conToolProm.query(sql)
-    // return Object.values(JSON.parse(JSON.stringify(rows)))
 }
 //@
 async function traitQuery() {
     try {
         const result = await Traits2.find();
-        console.log("TRAITS RESULT", result);
+        // console.log("TRAITS RESULT", result);
         if (result == null){
             return 0;
         } else{
@@ -811,22 +602,30 @@ async function traitQuery() {
             console.error("Error getting char:", error);
             throw error;
         }
-    // var sql = 'SELECT * FROM `shipTraits`'
-    // const [rows, fields] = await conToolProm.query(sql)
-    // return Object.values(JSON.parse(JSON.stringify(rows)))
 }
 //@
 async function factionQuery(factionID) {
-    var sql = 'SELECT * FROM `chrFactions` WHERE `factionID` = ?'
-    const [rows, fields] = await conSDEProm.query(sql, [factionID])
-    return Object.values(JSON.parse(JSON.stringify(rows)))
+    try {
+        const result = await Factions.findOne({'factionID': factionID});
+        console.log("FACTION RESULT",factionID, result);
+        if (result == null){
+            return 0;
+        } else{
+            return result;
+        }
+        } catch (error) {
+            console.error("Error getting char:", error);
+            throw error;
+        }
+    // var sql = 'SELECT * FROM `chrFactions` WHERE `factionID` = ?'
+    // const [rows, fields] = await conSDEProm.query(sql, [factionID])
+    // return Object.values(JSON.parse(JSON.stringify(rows)))
 }
 module.exports = {
     getHello,
     getChar,
     getID,
     getID2,
-    postID,
     getReport,
     prepReport,
     fetchReport,
