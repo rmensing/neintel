@@ -94,35 +94,6 @@ export default function Local() {
   const [report, { mutate: reportMutate, refetch: reportRefetch }] = createResource(rid, fetchReport);
   const params = useParams();
   const { paste, setPaste } = usePasteContext();
-  
-  
-//   createComputed(async () => {
-    
-//     // console.log("MAP:", ships.size);
-//     if (shipx.state === 'ready'){
-//       const ships = new ReactiveMap(shipx());
-//       // console.log("SHIPX:", shipx.latest,Object.entries(shipx.latest) );
-//       // const iterable = await shipx.latest;
-//       //   for (let s of iterable){
-//       //       ships.set(s.typeID, s);
-//       //   }
-//         console.log("SHIPX2:", ships.size, ships.entries())
-//     }
-// })
-
-// createComputed(async () => {
-//     if (traitx.state === 'ready'){
-//       const traits = new ReactiveMap(traitx());
-//         // console.log("TRAITX:", traitx());
-//         // const iterable = await traitx();
-//         // for await (let t of iterable){
-//         //     traits.set(t.typeID, t);
-//         // }
-//         console.log("TRAITX2:", traits.size, traits.entries())
-//     }
-// })
-
-
 
   console.log("Entry->", paste(), params.id, rid(), names(), report_id(), report())
   if (paste().length > 0 && typeof params.id == "undefined") {
@@ -195,9 +166,9 @@ export default function Local() {
 
           let sorted = updatedReport; // Initialize sorted variable with updatedReport
           console.log("SORTED:", sorted)
-          if (sortDir === "D") {
+          if (sortDir[sortCol()] === "D") {
             sorted = sort(updatedReport).desc((col) => col[sortCol()]);
-          } else if (sortDir === "A") {
+          } else if (sortDir[sortCol()] ===  "A") {
             sorted = sort(updatedReport).asc((col) => col[sortCol()]);
           }
           console.log("AFTER-SORT", sorted)
