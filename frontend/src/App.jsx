@@ -6,11 +6,14 @@ import Cargo from './pages/Cargo';
 import { createSignal, createEffect } from "solid-js";
 import { Routes, Route, useNavigate, A } from "@solidjs/router";
 import { usePasteContext } from "./context/PasteContext";
+// import { useShipsContext } from './context/ShipsContext';
 import 'flowbite';
 
 function App() {
-  const {paste, setPaste} = usePasteContext()
   const navigate = useNavigate()
+  const {paste, setPaste} = usePasteContext()
+  // const ships = useShipsContext();
+  
 
 
   function handleClipboard(event){
@@ -45,8 +48,8 @@ function App() {
   })
 
   return (
-    <div id="main" class="w-full z-0 m-auto bg-midnight font-sans" style="height: 100%;" onPaste={handleClipboard}>
-      <header class="bg-verdigris z-0 rounded-t-md">
+    <div id="main" class="z-0 m-auto bg-midnight font-sans" style="height: 100vh;" onPaste={handleClipboard}>
+      <header class="bg-verdigris z-0 rounded-t-md mb-5">
         <h3 class="text-2xl rounded-md">New Eden Intel</h3>
         <a class="font-bold" href="/">Home</a>
       </header>

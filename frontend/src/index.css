@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 body {
-  margin: 10px;
+  /* margin: 10px; */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   background: #0B0C10;
 }
 
@@ -15,23 +19,24 @@ a.block {
 
 /* The side navigation menu */
 .sidenav {
-  height: 100%; /* 100% Full-height */
+  height: calc(100vh - 100px); /* 100% Full-height */
   width: 0; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
+  padding-left: 0px;
+  /*position: relative; /* Stay in place */
   z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
-  right: 0;
+  /*top: 0; /* Stay at the top */
+  /*right: 0;
   background-color: #111; /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 30px; /* Place content 60px from the top */
+  /*padding-top: 30px; /* Place content 60px from the top */
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
 }
 
 /* The navigation menu links */
 .sidenav a {
-  padding: 8px 8px 8px 8px;
+  /* padding: 8px 8px 8px 8px; */
   text-decoration: none;
-  font-size: 25px;
+  /* font-size: 25px; */
   color: #818181;
   display: block;
   transition: 0.3s;
@@ -45,9 +50,9 @@ a.block {
 /* Position and style the close button (top right corner) */
 .sidenav .closebtn {
   position: absolute;
-  top: 0;
-  left: 0px;
-  font-size: 36px;
+  top: 5px;
+  left: 5px;
+  /* font-size: 36px; */
   color: #b00000;
 }
 
@@ -61,4 +66,15 @@ a.block {
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
+}
+
+#alert-1 {
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 1s;
+  transition-timing-function: ease-out;
+}
+
+#alert-1-fill {
+  width: 0px;
 }

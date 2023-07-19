@@ -8,7 +8,9 @@ const {
     fetchReport,
     fetchShips,
     fetchTraits,
-    fetchZkill
+    fetchZkill,
+    writeShips,
+    writeTraits
 } = require('../controllers/toolsController')
 
 
@@ -29,5 +31,9 @@ router.get('/ships', fetchShips)
 router.get('/traits', fetchTraits)
 
 router.get('/zkill/:id', fetchZkill)
+
+router.get('/writeships', writeShips)
+
+router.get('/writetraits', writeTraits)
 
 module.exports =  router

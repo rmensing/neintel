@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const traits2Schema = new mongoose.Schema({
-    id: Number,
+    typeID: Number,
     traits: Array
 })
 

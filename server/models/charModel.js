@@ -18,7 +18,6 @@ const charSchema = new mongoose.Schema({
     gang: Number,
     ships: Array,
     ships_all: Array,
-    zkill_stats: Object,
     z_dt: Date,
     char_dt: Date
 })

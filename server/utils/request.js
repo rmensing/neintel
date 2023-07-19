@@ -44,14 +44,17 @@ async function makeRequest({
 
     var urlHash = md5(fullURL);
     if (body != null && body != undefined){
-        var bodyHash = md5(body);
+        // console.log("BODY:", body.toString())
+        var bodyHash = md5(body.toString());
         var fullHash = urlHash + '-' + bodyHash;
     } else {
         fullHash = urlHash;
     }
 
     var value = await rClient.get(fullHash);
-    console.log("REDIS:", fullHash, value);
+    console.log("REDIS1:", fullURL, urlHash);
+    console.log("REDIS2:", body, bodyHash);
+    console.log("REDIS3:", fullHash, value);
     if (value === null){
         headers['x-user-agent'] = `${progName}`;
 

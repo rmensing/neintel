@@ -2,6 +2,7 @@
   "name": "vite-template-solid",
   "version": "1.0.0-beta",
   "description": "",
+  "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite --host",
@@ -12,14 +13,18 @@
   "devDependencies": {
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.23",
+    "solid-devtools": "^0.27.3",
     "tailwindcss": "^2.2.2",
     "vite": "^4.1.1",
     "vite-plugin-solid": "^2.5.0"
   },
   "dependencies": {
+    "@solid-primitives/map": "^0.4.6",
     "@solidjs/router": "^0.8.2",
+    "axios": "^1.4.0",
+    "fast-sort": "^3.4.0",
     "flowbite": "^1.6.5",
     "lodash": "^4.17.21",
-    "solid-js": "^1.6.10"
+    "solid-js": "^1.6.13"
   }
 }
