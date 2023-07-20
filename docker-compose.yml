@@ -95,6 +95,7 @@ services:
       - DNSPLUGIN=cloudflare #optional
       - EMAIL= rmensing@gmail.com
       - ONLY_SUBDOMAINS=false #optional
+      - EXTRA_DOMAINS=1au.info
       - STAGING=false #optional
     volumes:
       - ./.swag:/config
