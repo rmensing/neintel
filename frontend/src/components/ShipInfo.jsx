@@ -1,5 +1,5 @@
 import { createSignal, createEffect } from 'solid-js';
-import _ from "lodash";
+import { groupBy } from "lodash";
 import "flowbite";
 import { useShipsContext } from '../context/ShipsContext';
 
@@ -18,7 +18,7 @@ const ShipInfo = (props) => {
         // console.log("SHPINFO:",typeID,tid, v)
         // let t = traits.get(typeID)
         let tt = v?.traits;
-        var g = _.groupBy(tt, "skilltypeID");
+        var g = groupBy(tt, "skilltypeID");
         // console.log("TRAITS:", traits)
         // console.log("GROUPS:", g, tt);
         const jsx = [];
