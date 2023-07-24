@@ -70,9 +70,6 @@ services:
       - "/node/app/node_modules"
     environment:
       - PORT=5000
-      - MYSQL_HOST=db
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASS=${MYSQL_PASS}
       - ZKILL_API=https://zkillboard.com/api/stats/characterID/
       - ZKILL_USERAGENT=${ZKILL_USERAGENT}
     depends_on:
@@ -93,7 +90,7 @@ services:
       - VALIDATION=dns
       - SUBDOMAINS=wildcard #optional
       - DNSPLUGIN=cloudflare #optional
-      - EMAIL= rmensing@gmail.com
+      - EMAIL=${EMAIL}
       - ONLY_SUBDOMAINS=false #optional
       - EXTRA_DOMAINS=1au.info
       - STAGING=false #optional
@@ -125,8 +122,8 @@ services:
     container_name: mongo
     restart: always
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=robm
-      - MONGO_INITDB_ROOT_PASSWORD=paradigm
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - ./.mongodb/data:/data/db
     ports:
@@ -141,9 +138,9 @@ services:
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: robm
-      ME_CONFIG_MONGODB_ADMINPASSWORD: paradigm
-      ME_CONFIG_MONGODB_URL: mongodb://robm:paradigm@mongo:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
     networks:
       net:
         aliases: []
