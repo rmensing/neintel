@@ -5,21 +5,17 @@ import {
   Show,
   Switch,
   Match,
-  For,
-  createComputed
+  For
 } from "solid-js";
-import { createStore, unwrap, reconcile, produce } from "solid-js/store";
-import { ReactiveMap } from "@solid-primitives/map";
 import { usePasteContext } from "../context/PasteContext";
 import { useNavigate } from "@solidjs/router";
 import { Portal } from "solid-js/web";
 import "flowbite";
 import { initFlowbite } from "flowbite";
 import { useParams } from "@solidjs/router";
-import _, { findIndex } from "lodash";
-import axios from "axios";
+import _ from "lodash";
 import { sort } from 'fast-sort';
-import { submitReport, fetchReport, fetchZkill, fetchShips, fetchTraits} from '../query/utils';
+import { submitReport, fetchReport, fetchZkill} from '../query/utils';
 import ShipInfo from "../components/ShipInfo"
 import { useShipsContext } from '../context/ShipsContext';
 

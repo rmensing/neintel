@@ -3,10 +3,9 @@ import Local from './pages/Local';
 import Dscan from './pages/Dscan';
 import Probe from './pages/Probe';
 import Cargo from './pages/Cargo';
-import { createSignal, createEffect } from "solid-js";
+import { createEffect } from "solid-js";
 import { Routes, Route, useNavigate, A } from "@solidjs/router";
 import { usePasteContext } from "./context/PasteContext";
-// import { useShipsContext } from './context/ShipsContext';
 import 'flowbite';
 
 function App() {
