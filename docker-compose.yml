@@ -86,13 +86,13 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - URL=neintel.com
+      - URL=1au.info
       - VALIDATION=dns
       - SUBDOMAINS=wildcard #optional
       - DNSPLUGIN=cloudflare #optional
       - EMAIL=${EMAIL}
       - ONLY_SUBDOMAINS=false #optional
-      - EXTRA_DOMAINS=1au.info
+      - EXTRA_DOMAINS=1au.info,neintel.com
       - STAGING=false #optional
     volumes:
       - ./.swag:/config
