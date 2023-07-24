@@ -1,26 +1,26 @@
 require('dotenv').config()
 
 const express = require('express')
-const cors = require('cors');
+// const cors = require('cors');
 const mongoose = require('mongoose');
 const toolsRoutes = require('./routes/toolsRoutes')
 const toolsController = require('./controllers/toolsController')
 
-var corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: ["authorization", "Content-Type"],
-  exposedHeaders: ["authorization"],
-  preflightContinue: false,
-  credentials:true,
-  optionsSuccessStatus: 200
-}
+// var corsOptions = {
+//   origin: '*',
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   allowedHeaders: ["authorization", "Content-Type"],
+//   exposedHeaders: ["authorization"],
+//   preflightContinue: false,
+//   credentials:true,
+//   optionsSuccessStatus: 200
+// }
 // express app
 const app = express()
 
 // middleware
-app.options('*', cors(corsOptions))
-app.use(cors(corsOptions))
+// app.options('*', cors(corsOptions))
+// app.use(cors(corsOptions))
 app.use(express.json())
 app.use((req, res, next) => {
   console.log(req.path, req.method)
